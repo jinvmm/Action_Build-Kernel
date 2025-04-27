@@ -262,12 +262,13 @@ jobs:
           sed -i 's/ -dirty//g' "$PLATFORM/external/dtc/scripts/setlocalversion"
           sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" "$PLATFORM/build/kernel/kleaf/impl/stamp.bzl"
           sed -i '/KMI_GENERATION/s/-$oki_infix//g' "$PLATFORM/build/kernel/kleaf/impl/stamp.bzl"
-          #sed -i 's/^\(CONFIG_LOCALVERSION="[^"]*\)"/\1-Lotus"/' "$DEFCONFIG"
+          sed -i 's/^\(CONFIG_LOCALVERSION="[^"]*\)"/\1-JV"/' "$DEFCONFIG"
+          echo "DEFCONFIG=$DEFCONFIG" >> $GITHUB_ENV
 
           # Replace kernel name strings
-          echo "正在设置内核名称..."
-          sed -i '$s|echo "\$res"|echo "\${{ inputs.KERNEL_NAME }}"|' "$COMMON/scripts/setlocalversion"
-          echo "内核名称设置完成"
+          #echo "正在设置内核名称..."
+          #sed -i '$s|echo "\$res"|echo "\${{ inputs.KERNEL_NAME }}"|' "$COMMON/scripts/setlocalversion"
+          #echo "内核名称设置完成"
 
           # Set KSU config to gki_defconfig
           echo "正在更新KernelSU 内核配置..."
@@ -371,25 +372,3 @@ jobs:
         run: |
           cd "$WORKSPACE/AnyKernel3-KernelSU-Next"
           zip -r "$WORKSPACE/AnyKernel3-${{ inputs.FILE }}-SukiSU-${{ env.KSUVER }}-${{ steps.formatted_date.outputs.formatted }}.zip" *
-
-      - name: Create Release version and upload # 创建正式版本并上传
-        uses: softprops/action-gh-release@v2
-        with:
-          name: "内核发布: ${{ env.BRAND }}-${{ env.MODEL }}-${{ steps.formatted_date.outputs.formatted }}"
-          tag_name: "${{ inputs.FILE }}-${{ steps.formatted_date.outputs.formatted }}"
-          body: |
-            OnePlus Kernel Build
-            - Device 机型: `${{ env.BRAND }} ${{ env.MODEL }}`
-            - SoC 型号: `${{ inputs.SoC }}`
-            - Chipset 代号: `${{ inputs.Chipset }}`
-            - KernelSU 类型: `${{ env.KSU_TYPE }}`
-            - Branch 版本: `${{ env.KSUVER }}`
-            - SUSFS 补丁: `${{ inputs.SUSFS }}`
-            - VFS 补丁: `${{ inputs.VFS_PATCH }}`
-            - Kernel 版本: `${{ inputs.VERSION }}`
-            - 构建时间: `${{ steps.formatted_date.outputs.formatted }}`
-          files: |
-            ${{ env.WORKSPACE }}/AnyKernel3-*.zip
-            ${{ env.WORKSPACE }}/image_output/boot.img
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

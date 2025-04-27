@@ -264,7 +264,7 @@ jobs:
           sed -i '/KMI_GENERATION/s/-$oki_infix//g' "$PLATFORM/build/kernel/kleaf/impl/stamp.bzl"
           sed -i 's/^\(CONFIG_LOCALVERSION="[^"]*\)"/\1-JV"/' "$DEFCONFIG"
           echo "DEFCONFIG=$DEFCONFIG" >> $GITHUB_ENV
-
+          for file in $(find ${GITHUB_WORKSPACE} -type f -name 'setlocalversion' 2>/dev/null); do echo $file; sed -i 's/echo \"\$res\"/res\=\$\(echo \$res \| cut -d- -f1-4\)-FerK\; echo \"\$res\"/g' $file; done
           # Replace kernel name strings
           #echo "正在设置内核名称..."
           #sed -i '$s|echo "\$res"|echo "\${{ inputs.KERNEL_NAME }}"|' "$COMMON/scripts/setlocalversion"

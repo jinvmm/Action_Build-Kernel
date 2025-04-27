@@ -263,6 +263,9 @@ jobs:
           sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" "$PLATFORM/build/kernel/kleaf/impl/stamp.bzl"
           sed -i '/KMI_GENERATION/s/-$oki_infix//g' "$PLATFORM/build/kernel/kleaf/impl/stamp.bzl"
           sed -i 's/^\(CONFIG_LOCALVERSION="[^"]*\)"/\1-JV"/' "$DEFCONFIG"
+          sed -i '$s|echo "\$res"|echo "\$res-A"|' ./common/scripts/setlocalversion
+          sed -i '$s|echo "\$res"|echo "\$res-B"|' ./msm-kernel/scripts/setlocalversion
+          sed -i '$s|echo "\$res"|echo "\$res-C"|' ./external/dtc/scripts/setlocalversion
           echo "DEFCONFIG=$DEFCONFIG" >> $GITHUB_ENV
 
           # Replace kernel name strings

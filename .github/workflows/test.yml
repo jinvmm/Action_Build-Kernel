@@ -262,7 +262,7 @@ jobs:
           sed -i 's/ -dirty//g' "$PLATFORM/external/dtc/scripts/setlocalversion"
           sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" "$PLATFORM/build/kernel/kleaf/impl/stamp.bzl"
           sed -i '/KMI_GENERATION/s/-$oki_infix//g' "$PLATFORM/build/kernel/kleaf/impl/stamp.bzl"
-          sed -i 's/^\(CONFIG_LOCALVERSION="[^"]*\)"/\1-Lotus"/' "$DEFCONFIG"
+          #sed -i 's/^\(CONFIG_LOCALVERSION="[^"]*\)"/\1-Lotus"/' "$DEFCONFIG"
 
           # Replace kernel name strings
           echo "正在设置内核名称..."

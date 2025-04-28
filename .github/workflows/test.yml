@@ -265,13 +265,13 @@ jobs:
           sed -i 's/^\(CONFIG_LOCALVERSION="[^"]*\)"/\1-JV"/' "$DEFCONFIG"
           
           #for file in $(find ${GITHUB_WORKSPACE} -type f -name 'setlocalversion' 2>/dev/null); do echo $file; sed -i 's/echo \"\$res\"/res\=\$\(echo \$res \| cut -d- -f1-4\)-FerK\; echo \"\$res\"/g' $file; done
-          echo "$COMMON/scripts/setlocalversion"
+          cat "$COMMON/scripts/setlocalversion"
           # Replace kernel name strings
           echo "正在设置内核名称..."
           sed -i '$s|echo "\$res"|echo "\${{ inputs.KERNEL_NAME }}"|' "$COMMON/scripts/setlocalversion"
           echo "内核名称设置完成"
 
-          echo "$COMMON/scripts/setlocalversion"
+          cat "$COMMON/scripts/setlocalversion"
           
 
           # Set KSU config to gki_defconfig

@@ -271,6 +271,8 @@ jobs:
           #sed -i '$s|echo "\$res"|echo "\${{ inputs.KERNEL_NAME }}"|' "$COMMON/scripts/setlocalversion"
           #sed -i 's/echo \"\$res\"/res\="\${{ inputs.KERNEL_NAME }}"\; echo \"\$res\"/g' "$COMMON/scripts/setlocalversion"
           sed -i 's/echo \"\$res\"/res\=\$\(echo \$res \| cut -d- -f1\)\${{ inputs.KERNEL_NAME }}\; echo \"\$res\"/g' "$COMMON/scripts/setlocalversion"
+          sed -i 's/echo \"\$res\"/res\=\$\(echo \$res \| cut -d- -f1-4\)-B\; echo \"\$res\"/g' "$PLATFORM/msm-kernel/scripts/setlocalversion"
+          sed -i 's/echo \"\$res\"/res\=\$\(echo \$res \| cut -d- -f1-4\)-C\; echo \"\$res\"/g' "$PLATFORM/external/dtc/scripts/setlocalversion"
           echo "内核名称设置完成"
 
           cat "$COMMON/scripts/setlocalversion"

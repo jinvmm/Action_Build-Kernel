@@ -269,7 +269,7 @@ jobs:
           # Replace kernel name strings
           echo "正在设置内核名称..."
           #sed -i '$s|echo "\$res"|echo "\${{ inputs.KERNEL_NAME }}"|' "$COMMON/scripts/setlocalversion"
-          sed -i '$s|echo "\$res"|echo "\${{ inputs.KERNEL_NAME }}"|' "$COMMON/scripts/setlocalversion"
+          sed -i '$s|echo "\$res"|echo "\${{ inputs.KERNEL_NAME }}"|g' "$COMMON/scripts/setlocalversion"
           #sed -i 's/echo \"\$res\"/echo \"\$\(echo \$res \| cut -d- -f1\)\${{ inputs.KERNEL_NAME }}\"/g' "$COMMON/scripts/setlocalversion"
           #sed -i 's/\${KERNELVERSION}\${file_localversion}\${config_localversion}/\${KERNELVERSION}\$\(collect_files localversion\*\)\${config_localversion}/g' "$COMMON/scripts/setlocalversion"
           echo "内核名称设置完成"

@@ -271,6 +271,9 @@ jobs:
           sed -i '$s|echo "\$res"|echo "\${{ inputs.KERNEL_NAME }}"|' "$COMMON/scripts/setlocalversion"
           echo "内核名称设置完成"
 
+          echo "$COMMON/scripts/setlocalversion"
+          cat "$COMMON/scripts/setlocalversion"
+
           # Set KSU config to gki_defconfig
           echo "正在更新KernelSU 内核配置..."
           echo "CONFIG_KSU=y" >> "$DEFCONFIG"

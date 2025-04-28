@@ -1,4 +1,4 @@
-name: Build Oplus Kernel # 构建一加内核
+name: test # 构建一加内核
 
 on:
   workflow_dispatch:

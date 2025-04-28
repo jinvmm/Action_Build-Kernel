@@ -276,6 +276,8 @@ jobs:
           echo "内核名称设置完成"
 
           cat "$COMMON/scripts/setlocalversion"
+          cat "$PLATFORM/msm-kernel/scripts/setlocalversion"
+          cat "$PLATFORM/external/dtc/scripts/setlocalversion"
           
 
           # Set KSU config to gki_defconfig

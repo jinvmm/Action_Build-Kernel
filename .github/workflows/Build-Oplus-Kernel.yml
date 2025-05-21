@@ -192,9 +192,9 @@ jobs:
           patch -p1 < "50_add_susfs_in_gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch" || { echo "应用 susfs 补丁失败"; exit 1; }
           echo "susfs 补丁应用完成"
 
-          echo "正在打隐藏应用补丁..."
-          patch -p1 -F 3 < "69_hide_stuff.patch" || { echo "应用隐藏应用补丁失败"; exit 1; }
-          echo "隐藏应用补丁应用完成"
+          #echo "正在打隐藏应用补丁..."
+          #patch -p1 -F 3 < "69_hide_stuff.patch" || { echo "应用隐藏应用补丁失败"; exit 1; }
+          #echo "隐藏应用补丁应用完成"
 
       - name: Apply New Hooks patches # 应用新的钩子补丁
         if: ${{ startsWith(inputs.KSU_CONFIG, 'SukiSU') && inputs.VFS_PATCH == 'enable' }}
@@ -296,14 +296,16 @@ jobs:
           fi
 
           # Copy dtbo.img
-          readarray -d '' DTBO_FILES < <(find device/ -type f -name '*dtbo.img' -print0)
+          if [[ "${{ env.KERNEL_VERSION }}" == "6.6" && "${{ inputs.FILE }}" != "oneplus_13t_v" ]]; then
+            readarray -d '' DTBO_FILES < <(find device/ -type f -name '*dtbo.img' -print0)
 
-          if [ ${#DTBO_FILES[@]} -gt 0 ]; then
-              cp "${DTBO_FILES[@]}" "$WORKSPACE/image_output/"
-              echo "已复制以下文件到 image_output/："
-              printf "%s\n" "${DTBO_FILES[@]}"
-          else
-              echo "未找到任何 dtbo.img 文件"
+            if [ ${#DTBO_FILES[@]} -gt 0 ]; then
+                cp "${DTBO_FILES[@]}" "$WORKSPACE/image_output/"
+                echo "已复制以下文件到 image_output/："
+                printf "%s\n" "${DTBO_FILES[@]}"
+            else
+                echo "未找到任何 dtbo.img 文件"
+            fi
           fi
 
           # Copy boot.img

@@ -52,8 +52,17 @@ on:
           - disable
         default: enable
 
-      VFS_PATCH:
-        description: "启用 VFS 补丁（添加新钩子） // Enable VFS patch (add new hooks)"
+      VFS:
+        description: "启用 VFS 补丁（新的手动钩子） // Enable VFS patch (new hooks)"
+        required: true
+        type: choice
+        options:
+          - enable
+          - disable
+        default: enable
+
+      KPM:
+        description: "启用 KPM 补丁 // Enable kernel patched modules"
         required: true
         type: choice
         options:
@@ -159,7 +168,7 @@ jobs:
         if: ${{ startsWith(inputs.KSU_CONFIG, 'SukiSU') }}
         run: |
           cd "$PLATFORM"
-          curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU-Ultra/main/kernel/setup.sh" | bash -s ${{ env.SukiSU_BRANCH }}
+          curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s ${{ env.SukiSU_BRANCH }}
 
           cd ./KernelSU
           KSU_VERSION=$(expr $(/usr/bin/git rev-list --count main) "+" 10606)
@@ -172,7 +181,7 @@ jobs:
         if: ${{ startsWith(inputs.KSU_CONFIG, 'SukiSU') && inputs.SUSFS == 'enable' }}
         run: |
           cd "$WORKSPACE"
-          git clone https://github.com/ShirkNeko/SukiSU_patch.git
+          git clone https://github.com/SukiSU-Ultra/SukiSU_patch.git
           git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}
 
           # Copy patches
@@ -197,11 +206,11 @@ jobs:
           #echo "隐藏应用补丁应用完成"
 
       - name: Apply New Hooks patches # 应用新的钩子补丁
-        if: ${{ startsWith(inputs.KSU_CONFIG, 'SukiSU') && inputs.VFS_PATCH == 'enable' }}
+        if: ${{ startsWith(inputs.KSU_CONFIG, 'SukiSU') && inputs.VFS == 'enable' }}
         run: |
           cd "$WORKSPACE"
           if [ ! -d SukiSU_patch ]; then
-            git clone https://github.com/ShirkNeko/SukiSU_patch.git
+            git clone https://github.com/SukiSU-Ultra/SukiSU_patch.git
           else
             echo "SukiSU_patch 目录已存在，跳过克隆。"
           fi
@@ -238,8 +247,8 @@ jobs:
           echo "正在更新KernelSU 内核配置..."
           echo "CONFIG_KSU=y" >> "$DEFCONFIG"
           echo "CONFIG_KPM=y" >> "$DEFCONFIG"
-          echo "CONFIG_KSU_SUSFS_SUS_SU=${{ inputs.VFS_PATCH == 'enable' && 'n' || 'y' }}" >> "$DEFCONFIG"
-          echo "CONFIG_KSU_MANUAL_HOOK=${{ inputs.VFS_PATCH == 'enable' && 'y' || 'n' }}" >> "$DEFCONFIG"
+          echo "CONFIG_KSU_SUSFS_SUS_SU=${{ inputs.VFS == 'enable' && 'n' || 'y' }}" >> "$DEFCONFIG"
+          echo "CONFIG_KSU_MANUAL_HOOK=${{ inputs.VFS == 'enable' && 'y' || 'n' }}" >> "$DEFCONFIG"
 
           # Use SukiSU default config
           #echo "CONFIG_KSU_SUSFS=y" >> "$DEFCONFIG"
@@ -317,11 +326,11 @@ jobs:
             echo "boot.img 文件未找到，已跳过复制"
           fi
 
-      - name: Apply patch_linux and replace Image # 应用 patch_linux 并替换 Image
-        if: ${{ inputs.VFS_PATCH == 'enable' }}
+      - name: Apply patch_linux and replace Image # 应用 KPM patch_linux 并替换 Image
+        if: ${{ inputs.KPM == 'enable' }}
         run: |
           cd "$WORKSPACE/image_output"
-          curl -LO https://github.com/ShirkNeko/SukiSU_KernelPatch_patch/releases/download/0.11-beta/patch_linux
+          curl -LO https://github.com/SukiSU-Ultra/SukiSU_KernelPatch_patch/releases/download/0.11-beta/patch_linux
           chmod +x patch_linux
           ./patch_linux || { echo "应用 patch_linux 失败"; exit 1; }
 
@@ -354,19 +363,20 @@ jobs:
       - name: Create Release version and upload # 创建正式版本并上传
         uses: softprops/action-gh-release@v2
         with:
-          name: "内核发布: ${{ env.BRAND }}-${{ env.MODEL }}-${{ steps.formatted_date.outputs.formatted }}"
-          tag_name: "${{ inputs.FILE }}-${{ steps.formatted_date.outputs.formatted }}"
+          name: "Kenrel Release: ${{ env.BRAND }}-${{ env.MODEL }}-${{ steps.formatted_date.outputs.formatted }}"
+          tag_name: "${{ steps.formatted_date.outputs.formatted }}"
           body: |
-            OnePlus Kernel Build
+            OnePlus Kernel Release
             - Device 机型: `${{ env.BRAND }} ${{ env.MODEL }}`
             - SoC 型号: `${{ inputs.SoC }}`
             - Chipset 代号: `${{ inputs.Chipset }}`
             - KernelSU 类型: `${{ env.KSU_TYPE }}`
             - Branch 版本: `${{ env.KSUVER }}`
             - SUSFS 补丁: `${{ inputs.SUSFS }}`
-            - VFS 补丁: `${{ inputs.VFS_PATCH }}`
+            - VFS 补丁: `${{ inputs.VFS }}`
+            - KPM 补丁: `${{ inputs.KPM }}`
             - Kernel 版本: `${{ inputs.VERSION }}`
-            - 构建时间: `${{ steps.formatted_date.outputs.formatted }}`
+            - BuildTime 构建时间: `${{ steps.formatted_date.outputs.formatted }}`
           files: |
             ${{ env.WORKSPACE }}/AnyKernel3-*.zip
             ${{ env.WORKSPACE }}/image_output/*
